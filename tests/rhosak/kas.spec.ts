@@ -1,10 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '@lib/utils/fixtures';
 import { config } from '@lib/config';
-import { KafkaInstanceListPage } from '@lib/pom/streams/kafkaInstanceList';
 import { CloudProviders } from '@lib/enums/cloudproviders';
-import { ServiceAccountPage } from '@lib/pom/serviceAccounts/sa';
-import { AbstractPage } from '@lib/pom/abstractPage';
 
 const testInstanceName = config.instanceName;
 
@@ -13,6 +10,7 @@ test.use({ storageState: config.adminAuthFile });
 
 // test_3kas.py test_kas_kafka_check_does_not_exist
 test('check there are no Kafka instances', async ({ kafkaInstanceListPage ,page}) => {
+  await kafkaInstanceListPage;
   await expect(page.getByText('No Kafka instances')).toHaveCount(1);
 });
 
@@ -32,6 +30,7 @@ test('create, wait for ready and delete a Kafka instance', async ({ kafkaInstanc
 // test_3kas.py test_kas_kafka_standard_kafka_test_slider
 // TODO: check if this is actually what the test is really doing
 test('test Kafka creation units slider', async ({ kafkaInstanceListPage,page }) => {
+  await kafkaInstanceListPage;
   await page.getByText('Create Kafka instance').click();
 
   await expect(page.getByText('Create a Kafka instance')).toHaveCount(1);
@@ -102,7 +101,7 @@ test('test fail to create Kafka instance with the same name', async ({ page, kaf
   await kafkaInstanceListPage.deleteKafkaInstance(testInstanceName);
 });
 
-test('create GCP Kafka instance', async ({ page , kafkaInstanceListPage}) => {
+test('create GCP Kafka instance', async ({ kafkaInstanceListPage}) => {
   await kafkaInstanceListPage.createKafkaInstance(testInstanceName, false, CloudProviders.GCP);
   await kafkaInstanceListPage.deleteKafkaInstance(testInstanceName);
 });
